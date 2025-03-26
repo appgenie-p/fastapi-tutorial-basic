@@ -1,25 +1,17 @@
-from enum import Enum
 from fastapi import FastAPI
+from pydantic import BaseModel, Field
 
 app = FastAPI()
 
 
-class Param(str, Enum):
-    A = "a"
-    B = "b"
+class Item(BaseModel):
+    name: str = Field(examples=["Foo"])
+    description: str | None = Field(default=None, examples=["A very nice Item"])
+    price: float = Field(examples=[35.4])
+    tax: float | None = Field(default=None, examples=[3.2])
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/{param}")
-async def root_with_param(param):
-    return {"message": f"Hello {param}"}
-
-
-@app.get("/param/{enum_param}")
-async def param_basic_test(enum_param: Param):
-    if enum_param == Param.A:
-        return {"message": f"Hello {enum_param.name}"}
+@app.put("/items/{item_id}")
+async def update_item(item_id: int, item: Item):
+    results = {"item_id": item_id, "item": item}
+    return results

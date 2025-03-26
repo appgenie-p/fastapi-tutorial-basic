@@ -1,22 +1,39 @@
 from fastapi.testclient import TestClient
-from app.main import Param, app
+from app.main import app
 
 client = TestClient(app)
 
 
-def test_valid_no_param():
-    response = client.get("/")
+def test_update_item():
+    response = client.put("/items/1", json={"name": "test", "price": 10.5})
     assert response.status_code == 200
-    assert response.json() == {"message": "Hello World"}
+    assert response.json() == {
+        "item_id": 1,
+        "item": {"name": "test", "price": 10.5, "description": None, "tax": None},
+    }
 
 
-def test_valid_simple_param():
-    response = client.get("/ABC")
+def test_update_item_with_query():
+    response = client.put("/items/1?q=test", json={"name": "test", "price": 10.5})
     assert response.status_code == 200
-    assert response.json() == {"message": "Hello ABC"}
+    assert response.json() == {
+        "item_id": 1,
+        "q": "test",
+        "item": {"name": "test", "price": 10.5, "description": None, "tax": None},
+    }
 
 
-def test_valid_param_A():
-    response = client.get("/param/a")
-    assert response.status_code == 200, response.json()
-    assert response.json() == {"message": f"Hello {Param.A.name}"}
+def test_update_item_invalid_id():
+    response = client.put("/items/1001", json={"name": "test", "price": 10.5})
+    assert response.status_code == 422
+
+
+def test_update_item_negative_id():
+    response = client.put("/items/-1", json={"name": "test", "price": 10.5})
+    assert response.status_code == 422
+
+
+def test_update_item_without_body():
+    response = client.put("/items/1")
+    assert response.status_code == 200
+    assert response.json() == {"item_id": 1}

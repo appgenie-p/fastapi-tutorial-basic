@@ -4,11 +4,11 @@ version = "0.1.0"
 description = "Follow up the official tutorial"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-    "fastapi[standard]>=0.115.12",
-]
+dependencies = ["fastapi[standard]>=0.115.12"]
 
 [dependency-groups]
-dev = [
-    "pytest>=8.3.5",
-]
+dev = ["pytest>=8.3.5"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
